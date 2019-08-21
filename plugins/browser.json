@@ -1,0 +1,46 @@
+{
+    "prepare_queue": {
+        "installed": [],
+        "uninstalled": []
+    },
+    "config_munge": {
+        "files": {}
+    },
+    "installed_plugins": {
+        "cordova-plugin-statusbar": {
+            "PACKAGE_NAME": "com.phonegap.helloworld"
+        },
+        "phonegap-plugin-push": {
+            "SENDER_ID": "XXXXXXX",
+            "PACKAGE_NAME": "com.phonegap.helloworld"
+        },
+        "cordova-plugin-console": {
+            "PACKAGE_NAME": "com.phonegap.helloworld"
+        },
+        "cordova-plugin-dialogs": {
+            "PACKAGE_NAME": "com.phonegap.helloworld"
+        },
+        "cordova-plugin-whitelist": {
+            "PACKAGE_NAME": "com.phonegap.helloworld"
+        },
+        "cordova-plugin-device": {
+            "PACKAGE_NAME": "com.bikesafe.app"
+        },
+        "cordova-plugin-buildinfo": {
+            "PACKAGE_NAME": "com.bikesafe.app"
+        },
+        "cordova-plugin-splashscreen": {
+            "PACKAGE_NAME": "com.bikesafe.app"
+        },
+        "cordova-plugin-camera": {
+            "PACKAGE_NAME": "com.bikesafe.app"
+        },
+        "cordova-launch-review": {
+            "PACKAGE_NAME": "com.bikesafe.app"
+        },
+        "cordova-plugin-inappbrowser": {
+            "PACKAGE_NAME": "com.bikesafe.app"
+        }
+    },
+    "dependent_plugins": {}
+}
