@@ -55,7 +55,7 @@ var AppDetails = {
     code: 38,
     supportCode: 38,
     appId: '',
-    appleId: '',
+    appleId: '1477457915',
 };
 
 if( navigator.userAgent.match(/Windows/i) ){    
@@ -561,6 +561,27 @@ $$('body').on('click', 'a.external', function(event) {
         }*/
         window.open(encodeURI(href), '_blank', 'location=yes');
     }
+    return false;
+});
+
+$$('body').on('click', '.routeButton', function(){
+    var that = $$(this);
+    var lat = that.data('Lat');
+    var lng = that.data('Lng');
+    if (lat && lng) {
+        var href = API_URL.URL_ROUTE.format(
+            encodeURIComponent(lat),
+            encodeURIComponent(lng)
+            );
+        window.open(href, '_blank', 'location=yes');
+    }
+});
+
+$$('body').on('click', '.reportTheft', function() {
+    event.preventDefault();
+
+    loadPageTheftReport();
+
     return false;
 });
 
@@ -2776,7 +2797,7 @@ App.onPageInit('asset.track', function (page) {
     var posSpeed = $$(page.container).find('.position_speed');
     var posAddress = $$(page.container).find('.display_address');
     var posLatlng = $$(page.container).find('.position_latlng');
-    //var routeButton = $$(page.container).find('.route_button');
+    var routeButton = $$(page.container).find('.route_button');
     var panoButton = $$(page.container).find('.pano_button');
     var lat = panoButton.data('lat');
     var lng = panoButton.data('lng');
@@ -2786,7 +2807,7 @@ App.onPageInit('asset.track', function (page) {
         'posMileage':posMileage,
         'posSpeed':posSpeed,
         'posAddress':posAddress,
-        //'routeButton':routeButton,
+        'routeButton':routeButton,
         'panoButton':panoButton,
         'posLatlng':posLatlng,
     };
@@ -3373,6 +3394,40 @@ function loadAlarmsAssetsPage(){
                                   
                     }
                 });
+}
+
+function loadPageTheftReport() {
+    var assetList = getAssetList();
+    var asset = assetList[TargetAsset.ASSET_IMEI];
+    var param = {
+        loginName: '',
+        imei: '',
+        make: '',
+        model: '',
+        registration: ''
+    };
+
+
+    if (localStorage.ACCOUNT) {
+        param.loginName = encodeURIComponent(localStorage.ACCOUNT.trim());
+    }
+    if (TargetAsset.ASSET_IMEI) {
+        param.imei = encodeURIComponent(TargetAsset.ASSET_IMEI);
+    }
+
+    if (asset.Describe1) {
+        param.make = encodeURIComponent(asset.Describe1.trim());
+    }
+    if (asset.Describe2) {
+        param.model = encodeURIComponent(asset.Describe2.trim());
+    }
+    if (asset.Registration) {
+        param.registration = encodeURIComponent(asset.Registration.trim());
+    }
+
+    var href = API_URL.URL_REPORT_THEFT.format(param.loginName, param.imei, param.make, param.model, param.registration);
+
+     window.open(href, '_blank', 'location=yes');
 }
 
 function loadPageSupport(){
@@ -5005,9 +5060,10 @@ function updateMarkerPositionTrack(data){
                 data.panoButton.data('lng',latlng.lng);
             }            
 
-           /* if (data.routeButton) {
-                data.routeButton.attr('href',API_ROUTE+latlng.lat+','+latlng.lng);
-            }*/
+            if (data.routeButton) {                
+                data.routeButton.data('lat',latlng.lat);
+                data.routeButton.data('lng',latlng.lng);
+            }
 
            
             var newMarkerData = getMarkerDataTable(asset);            

@@ -164,3 +164,6 @@
 .icon-other-menu:before {
   content: "\50";
 }
+.icon-other-route:before {
+  content: "\51";
+}
