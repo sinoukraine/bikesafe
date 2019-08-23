@@ -1103,6 +1103,7 @@ App.onPageInit('asset.edit', function (page) {
    
 
     $$('.saveAssetEdit').on('click', function(){
+        //console.log(page.context.MaxSpeed);
         var mileage = $$(page.container).find('input[name="Mileage"]').val() ? $$(page.container).find('input[name="Mileage"]').val() : 0;
         var runTime = $$(page.container).find('input[name="Runtime"]').val() ? $$(page.container).find('input[name="Runtime"]').val() : 0;
         var MaxSpeed = $$(page.container).find('input[name="MaxSpeed"]').val();
@@ -1119,7 +1120,8 @@ App.onPageInit('asset.edit', function (page) {
             Describe3: $$(page.container).find('input[name="Describe3"]').val(),
             Describe4: $$(page.container).find('input[name="Describe4"]').val(),
             Icon: TargetAsset.ASSET_IMG,    
-            MaxSpeed: MaxSpeed,
+            //MaxSpeed: MaxSpeed,
+            MaxSpeed: page.context.MaxSpeed,
         };
 
         var userInfo = getUserinfo();         
@@ -4231,7 +4233,8 @@ function loadAlarmPage(params){
         },
         geolock: {
             state: true,
-            val: 1024,
+            //val: 1024,
+            val: 1048,
         },
         geofenceIn: {
             state: true,

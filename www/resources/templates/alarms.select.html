@@ -21,51 +21,55 @@
         
         <div class="page-content">
             <input type="hidden" name="Assets" value="{{Assets}}">
-            <div class="content-block-title bw-li-switch  ">
-                {{@global.LANGUAGE.GEOFENCE_MSG_28}}
-                <label class="label-switch">
-                    <input type="checkbox" name="ignoreBetween" {{#if IgnoreBetween}} checked="checked" {{/if}}>
-                    <div class="checkbox"></div>
-                </label> 
-            </div> 
-            <div class="list-block  list-block-input " >          
-                <ul> 
-                    <li class="picker-el-wrapper {{#unless IgnoreBetween}} disabled {{/unless}}">
-                        <a href="#" class="item-content item-link item-with-arrow">                               
-                            <div class="item-inner">
-                                <div class="item-title label">{{@global.LANGUAGE.GEOFENCE_MSG_16}}</div>
-                                <div class="item-input">
-                                    <input type="text" placeholder="{{@global.LANGUAGE.GEOFENCE_MSG_16}}" name="picker-from" class="picker-from" readonly value="{{BeginTime}}">
-                                </div>
-                            </div>
-                        </a>
-                    </li>
-                    <li class="picker-el-wrapper {{#unless IgnoreBetween}} disabled {{/unless}}">
-                        <a href="#" class="item-content item-link item-with-arrow">                                
-                            <div class="item-inner no-after">
-                                <div class="item-title label">{{@global.LANGUAGE.GEOFENCE_MSG_17}}</div>
-                                <div class="item-input  no-after">
-                                    <input type="text" placeholder="{{@global.LANGUAGE.GEOFENCE_MSG_17}}" name="picker-to" class="picker-to" readonly value="{{EndTime}}">
-                                </div>
-                            </div>
-                        </a>
-                    </li>
-                    <li class="ignore-on-wrapper {{#unless IgnoreBetween}} disabled {{/unless}}">
-                        <a href="#" class="item-link smart-select "  data-open-in="picker">                           
-                            <select name="ignore-days"  multiple> 
-                                {{#each DaysOfWeek}}             
-                                    <option value="{{val}}" {{#if selected}} selected {{/if}}>{{name}}</option>                                    
-                                {{/each}}  
-                            </select>
-                            <div class="item-content">
-                                <div class="item-inner ">                                    
-                                    <div class="item-title label">{{@global.LANGUAGE.GEOFENCE_MSG_31}}</div>
-                                </div>
-                            </div>
-                        </a>
-                    </li>                
-                </ul>
-            </div>          
+
+            
+            <!-- <div class="content-block-title bw-li-switch  hintParent" data-hint-text="{{@global.LANGUAGE.PROMPT_MSG065}}" data-hint-title="{{@global.LANGUAGE.GEOFENCE_MSG_28}}">
+                  <span class="showHint">{{@global.LANGUAGE.GEOFENCE_MSG_28}}</span>
+                  <label class="label-switch">
+                      <input type="checkbox" name="ignoreBetween" {{#if IgnoreBetween}} checked="checked" {{/if}}>
+                      <div class="checkbox"></div>
+                  </label> 
+              </div> 
+              
+               
+              <div class="list-block  list-block-input " >          
+                  <ul> 
+                      <li class="picker-el-wrapper {{#unless IgnoreBetween}} disabled {{/unless}}">
+                          <a href="#" class="item-content item-link item-with-arrow">                               
+                              <div class="item-inner">
+                                  <div class="item-title label">{{@global.LANGUAGE.GEOFENCE_MSG_16}}</div>
+                                  <div class="item-input">
+                                      <input type="text" placeholder="{{@global.LANGUAGE.GEOFENCE_MSG_16}}" name="picker-from" class="picker-from" readonly value="{{BeginTime}}">
+                                  </div>
+                              </div>
+                          </a>
+                      </li>
+                      <li class="picker-el-wrapper {{#unless IgnoreBetween}} disabled {{/unless}}">
+                          <a href="#" class="item-content item-link item-with-arrow">                                
+                              <div class="item-inner no-after">
+                                  <div class="item-title label">{{@global.LANGUAGE.GEOFENCE_MSG_17}}</div>
+                                  <div class="item-input  no-after">
+                                      <input type="text" placeholder="{{@global.LANGUAGE.GEOFENCE_MSG_17}}" name="picker-to" class="picker-to" readonly value="{{EndTime}}">
+                                  </div>
+                              </div>
+                          </a>
+                      </li>
+                      <li class="ignore-on-wrapper {{#unless IgnoreBetween}} disabled {{/unless}}">
+                          <a href="#" class="item-link smart-select "  data-open-in="picker">                           
+                              <select name="ignore-days"  multiple> 
+                                  {{#each DaysOfWeek}}             
+                                      <option value="{{val}}" {{#if selected}} selected {{/if}}>{{name}}</option>                                    
+                                  {{/each}}  
+                              </select>
+                              <div class="item-content">
+                                  <div class="item-inner ">                                    
+                                      <div class="item-title label">{{@global.LANGUAGE.GEOFENCE_MSG_31}}</div>
+                                  </div>
+                              </div>
+                          </a>
+                      </li>                
+                  </ul>
+              </div>         -->  
 
             <div class="list-block no-hairline-top  media-list alarm_list">
                 <ul>
@@ -73,13 +77,13 @@
                     <li class="item-content">                       
                         <div class="item-inner"> 
                             <div class="item-title-row">
-                                <div class="item-title">{{@global.LANGUAGE.ALARM_MSG12}}</div>
+                                <div class="item-title">{{@global.LANGUAGE.ALARM_MSG05}}</div>
                                 <div class="item-after align-items-center no-fastclick"> 
                                     <span class="custom-radio-wrapper color-gray">
-                                        <input type="radio" class="input-checkbox-alarm" name="radio-geofenceIn" value="8" {{#unless geofenceIn}} checked="checked"{{/unless}}>
+                                        <input type="radio" class="input-checkbox-alarm" name="radio-geolock" value="1048" {{#unless geolock}} checked="checked"{{/unless}}>
                                     </span>
                                     <span class="custom-radio-wrapper color-green">
-                                        <input type="radio" class="input-checkbox-alarm" name="radio-geofenceIn" value="0"  {{#if geofenceIn}}checked="checked"{{/if}}>
+                                        <input type="radio" class="input-checkbox-alarm" name="radio-geolock" value="0"  {{#if geolock}}checked="checked"{{/if}}>
                                     </span>                                 
                                 </div>
                             </div>                        
@@ -149,7 +153,7 @@
                             </div>                        
                         </div>
                     </li> 
-                    <li class="item-content">                       
+                    <!-- <li class="item-content">                       
                         <div class="item-inner"> 
                             <div class="item-title-row">
                                 <div class="item-title">{{@global.LANGUAGE.ALARM_MSG14}}</div>
@@ -157,15 +161,15 @@
                                     <span class="custom-radio-wrapper color-gray">
                                         <input type="radio" class="input-checkbox-alarm" name="radio-illegalIgnition" value="128" {{#unless illegalIgnition}} checked="checked"{{/unless}}>
                                     </span>
-                                    <span class="custom-radio-wrapper color-green">
-                                        <input type="radio" class="input-checkbox-alarm" name="radio-illegalIgnition" value="0"  {{#if illegalIgnition}}checked="checked"{{/if}}>
-                                    </span>
-                                    
+                                                        <span class="custom-radio-wrapper color-green">
+                                                            <input type="radio" class="input-checkbox-alarm" name="radio-illegalIgnition" value="0"  {{#if illegalIgnition}}checked="checked"{{/if}}>
+                                                        </span>
+                                                        
                                 </div>
                             </div>                        
                         </div>
-                    </li> 
-                    <li class="item-content">                       
+                    </li>  -->
+                    <!-- <li class="item-content">                       
                         <div class="item-inner"> 
                             <div class="item-title-row">
                                 <div class="item-title">{{@global.LANGUAGE.ALARM_MSG13}}</div>
@@ -173,14 +177,14 @@
                                     <span class="custom-radio-wrapper color-gray">
                                         <input type="radio" class="input-checkbox-alarm" name="radio-geofenceOut" value="16" {{#unless geofenceOut}} checked="checked"{{/unless}}>
                                     </span>
-                                    <span class="custom-radio-wrapper color-green">
-                                        <input type="radio" class="input-checkbox-alarm" name="radio-geofenceOut" value="0"  {{#if geofenceOut}}checked="checked"{{/if}}>
-                                    </span>
-                                    
+                                                        <span class="custom-radio-wrapper color-green">
+                                                            <input type="radio" class="input-checkbox-alarm" name="radio-geofenceOut" value="0"  {{#if geofenceOut}}checked="checked"{{/if}}>
+                                                        </span>
+                                                        
                                 </div>
                             </div>                        
                         </div>
-                    </li> 
+                    </li>  -->
                     <li class="item-content">                       
                         <div class="item-inner"> 
                             <div class="item-title-row">
@@ -213,7 +217,7 @@
                             </div>                        
                         </div>
                     </li>
-                    <li class="item-content">                       
+                    <!-- <li class="item-content">                       
                         <div class="item-inner"> 
                             <div class="item-title-row">
                                 <div class="item-title">{{@global.LANGUAGE.ALARM_MSG22}}</div>
@@ -260,6 +264,22 @@
                                 </div>
                             </div>                        
                         </div>
+                    </li>  -->
+                    <li class="item-content">                       
+                        <div class="item-inner"> 
+                            <div class="item-title-row">
+                                <div class="item-title">{{@global.LANGUAGE.ALARM_MSG23}}</div>
+                                <div class="item-after align-items-center no-fastclick">
+                                    <span class="custom-radio-wrapper color-gray">
+                                        <input type="radio" class="input-checkbox-alarm" name="radio-speeding" value="32" {{#unless speeding}} checked="checked"{{/unless}}>
+                                    </span>
+                                    <span class="custom-radio-wrapper color-green">
+                                        <input type="radio" class="input-checkbox-alarm" name="radio-speeding" value="0"  {{#if speeding}}checked="checked"{{/if}}>
+                                    </span>
+                                    
+                                </div>
+                            </div>                        
+                        </div>
                     </li> 
                     <li class="item-content">                       
                         <div class="item-inner"> 
@@ -283,7 +303,7 @@
                 </ul>        
             </div>
 
-            <div class="content-block-title bw-li-switch hintParent" data-hint-text="{{@global.LANGUAGE.PROMPT_MSG064}}" data-hint-title="{{@global.LANGUAGE.ALARM_MSG30}}">
+            <!-- <div class="content-block-title bw-li-switch hintParent" data-hint-text="{{@global.LANGUAGE.PROMPT_MSG064}}" data-hint-title="{{@global.LANGUAGE.ALARM_MSG30}}">
                 <span class="showHint">{{@global.LANGUAGE.ALARM_MSG30}}</span>
                 <label class="label-switch">
                     <input type="checkbox" class="input-checkbox-alarm" name="checkbox-offline" value="67108864" {{#if offline}} checked="checked" {{/if}}>
@@ -327,7 +347,7 @@
                     </li>
                 </ul>
             </div>
-
+            
             <div class="content-block-title bw-li-switch hintParent" data-hint-text="{{@global.LANGUAGE.PROMPT_MSG062}}</br>{{@global.LANGUAGE.PROMPT_MSG063}}" data-hint-title="{{@global.LANGUAGE.ALARM_MSG23}}">
                 <span class="showHint">{{@global.LANGUAGE.ALARM_MSG23}}</span>
                 <label class="label-switch">
@@ -339,7 +359,7 @@
                 <ul>                 
                     <li>
                         <label class="label-radio item-content overspeed-radio-wrapper {{#unless speeding}} disabled {{/unless}}">
-                            <input type="radio" name="overspeed-radio" value="1"  checked="checked" >
+                            <input type="radio" name="overspeed-radio" value="1" {{#if OverspeedRadio1}} checked="checked" {{/if}}>
                             <div class="item-inner">
                                 <div class="item-title">{{@global.LANGUAGE.ALARM_MSG29}}</div>
                             </div>
@@ -347,14 +367,15 @@
                     </li>                   
                     <li>
                         <label class="label-radio item-content overspeed-radio-wrapper {{#unless speeding}} disabled {{/unless}}">
-                            <input type="radio" name="overspeed-radio" value="2">
+                            <input type="radio" name="overspeed-radio" value="2" {{#if OverspeedRadio2}} checked="checked" {{/if}}>
                             <div class="item-inner">
                                 <div class="item-title">{{@global.LANGUAGE.ALARM_MSG28}}</div>
                             </div>
                         </label>
                     </li>                   
                 </ul>
-            </div>     
+            </div>      -->
+               
             
             
 
