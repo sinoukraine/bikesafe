@@ -1107,8 +1107,8 @@ App.onPageInit('asset.edit', function (page) {
             Describe3: $$(page.container).find('input[name="Describe3"]').val(),
             Describe4: $$(page.container).find('input[name="Describe4"]').val(),
             Icon: TargetAsset.ASSET_IMG,
-            //MaxSpeed: MaxSpeed, 
-            MaxSpeed: page.context.MaxSpeed,    
+            MaxSpeed: MaxSpeed, 
+            //MaxSpeed: page.context.MaxSpeed,    
         };
 
         var userInfo = getUserinfo();         
@@ -2098,7 +2098,7 @@ App.onPageInit('resetPwd', function (page) {
 
 App.onPageInit('asset.alarm', function (page) { 
 
-    console.log(page.context);
+    //console.log(page.context);
     var alarm = $$(page.container).find('input[name = "checkbox-alarm"]');
 
     //var alarmFields = ['accOff', 'accOn', 'customAlarm', 'custom2LowAlarm', 'geolock', 'geofenceIn', 'geofenceOut', 'illegalIgnition', 'lowBattery', 'mainBatteryFail', 'sosAlarm', 'speeding', 'tilt', 'harshAcc', 'harshBrk'];
