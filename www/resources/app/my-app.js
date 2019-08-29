@@ -3493,7 +3493,7 @@ function getAssetImg(params, imgFor){
     if (params && imgFor.assetList) {
         var pattern = /^IMEI_/i;   
         if (params.Icon && pattern.test(params.Icon)) {
-            assetImg = '<img class="item_asset_img" src="http://upload.quiktrak.co/Attachment/images/'+params.Icon+'?'+ new Date().getTime()+'alt="">';
+            assetImg = '<img class="item_asset_img" src="http://upload.quiktrak.co/Attachment/images/'+params.Icon+'?'+ new Date().getTime()+'" alt="">';
         }else if (params.Name) {
             params.Name = $.trim(params.Name);
             var splitted = params.Name.split(' ');                
