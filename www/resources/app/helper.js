@@ -24,6 +24,11 @@ Protocol = {
             popupAnchor:  [0, -60] // point from which the popup should open relative to the iconAnchor
         })
     ],
+    PolygonCustomization:{
+        color: '#AA5959',
+        fillColor: '#FF0000',
+        fillOpacity: 0.25,
+    },
     PositionTypes: {
         "NONE": 0,
         "GPS": 1,
@@ -95,6 +100,7 @@ Protocol = {
     },
     ProductFeatures : {
         "Static":256,
+        "Charging":524288,
         "Holder":32768,
         "FuelSensor":2048,
         "Acc":128,
@@ -106,6 +112,7 @@ Protocol = {
         "Battery":1024,
         "DrivingTime":65536,
         "RFIDCard":16384,
+        "Heartrate":262144,
         "GsmSignal":32,
         "Mileage":16,
         "None":0,
@@ -117,7 +124,45 @@ Protocol = {
     StatusNewEnum:{
         "Geolock" : 1,
         "Immobilise": 2,
+        "LockDoor": 4,
     },
+    DaysOfWeek: [
+        {
+            val: 0,
+            name: LANGUAGE.GEOFENCE_MSG_20,
+            nameSmall: LANGUAGE.COM_MSG46,
+        },
+        {
+            val: 1,
+            name: LANGUAGE.GEOFENCE_MSG_21,
+            nameSmall: LANGUAGE.COM_MSG47,
+        },
+        {
+            val: 2,
+            name: LANGUAGE.GEOFENCE_MSG_22,
+            nameSmall: LANGUAGE.COM_MSG48,
+        },
+        {
+            val: 3,
+            name: LANGUAGE.GEOFENCE_MSG_23,
+            nameSmall: LANGUAGE.COM_MSG49,
+        },
+        {
+            val: 4,
+            name: LANGUAGE.GEOFENCE_MSG_24,
+            nameSmall: LANGUAGE.COM_MSG50,
+        },
+        {
+            val: 5,
+            name: LANGUAGE.GEOFENCE_MSG_25,
+            nameSmall: LANGUAGE.COM_MSG51,
+        },
+        {
+            val: 6,
+            name: LANGUAGE.GEOFENCE_MSG_26,
+            nameSmall: LANGUAGE.COM_MSG52,
+        },
+    ],
     Helper: {
         getSpeedValue: function (speedUnit, speed) {
             var ret = 0;
@@ -183,7 +228,7 @@ Protocol = {
             var ret = "";
             switch (speedUnit) {
                 case "KT":
-                    ret = "nm";
+                    ret = "mile";
                     break;
                 case "KPH":
                     ret = "km";
@@ -206,7 +251,7 @@ Protocol = {
         },
         getEngineHours: function(asset, launchHours){
             var ret = 0;
-            ret = TimeSpan(parseInt(launchHours)*1000 + parseInt(asset.InitAcconHours)*60*60*1000 + parseInt(asset._FIELD_FLOAT8)*1000).format("^hh:mm");  
+            ret = TimeSpan(parseInt(launchHours)*1000 + parseInt(asset.InitAcconHours)*60*60*1000 + parseInt(asset._FIELD_FLOAT8)*1000).format("^hh:mm:ss");  
             return ret;
         },
         getDirectionCardinal: function(direction){
@@ -243,6 +288,7 @@ Protocol = {
         },
         getPositionType: function(type){
             var ret = "";
+            type ? type = parseInt(type,10) : '';
             switch (type){
                 case 0: case 1:
                     ret = "GPS";
@@ -295,10 +341,11 @@ Protocol = {
             }
             return ret;
         },
-        getGeoImmobState: function(val){
+        getGeoImmobState: function(val){            
             var ret = {
-                Geolock : false,
-                Immobilise : false
+                Geolock: false,
+                Immobilise: false,
+                LockDoor: false,
             };
             if (val) {
                 if ((parseInt(val) & 1) > 0) {        
@@ -307,12 +354,32 @@ Protocol = {
                 if ((parseInt(val) & 2) > 0) {        
                     ret.Immobilise = true; 
                 }
-            }
+                if ((parseInt(val) & 4) > 0) {        
+                    ret.LockDoor = true; 
+                }
+            }            
             return ret;
+        },
+        getGeofenceAlertType: function(val){
+            var ret = '';
+            if (val) {
+                if ((parseInt(val) & 8) > 0) {        
+                    ret += LANGUAGE.GEOFENCE_MSG_12 + ', '; 
+                }
+                if ((parseInt(val) & 16) > 0) {        
+                    ret += LANGUAGE.GEOFENCE_MSG_13 + ', '; 
+                }                
+            } 
+            if (ret) {
+                ret = ret.slice(0, -2);
+            }else{
+                ret = LANGUAGE.COM_MSG58; 
+            }
+            return ret; 
         },
         getAddressByGeocoder: function(latlng,replyFunc){
             /*var url = "http://map.quiktrak.co/reverse.php?format=json&lat={0}&lon={1}&zoom=18&addressdetails=1".format(latlng.lat, latlng.lng);
-            JSON1.request(url, function(result){ replyFunc(result.display_name);});*/
+            JSON.request(url, function(result){ replyFunc(result.display_name);});*/
             var coords = latlng.lat + ', ' + latlng.lng;
             $.ajax({
                    type: "GET",                    
@@ -350,7 +417,7 @@ Protocol = {
         },
         getLatLngByGeocoder: function(address,replyFunc){            
             var url = "https://nominatim.openstreetmap.org/search?q={0}&format=json&polygon=1&addressdetails=1".format(address);
-                /*JSON1.request(url, function(result){                    
+                /*JSON.request(url, function(result){                    
                     var res = new L.LatLng(result[0].lat, result[0].lon);
                     replyFunc(res);
                 });*/
@@ -402,40 +469,17 @@ Protocol = {
         },    
         createMap: function(option){
             var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { name: 'osm', attribution: '' });            
-            var googleStreets = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
+            var googleStreets = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
                 maxZoom: 22,
                 subdomains:['mt0','mt1','mt2','mt3']
             });           
-            var googleSatelitte = L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',{
+            var googleSatelitte = L.tileLayer('https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',{
                 maxZoom: 20,
                 subdomains:['mt0','mt1','mt2','mt3']
             });  
+         
 
-            var layerSeaMark = L.tileLayer( "http://tiles.openseamap.org/seamark/{z}/{x}/{y}.png", { numZoomLevels: 18, isBaseLayer:false, displayOutsideMaxExtent:true });           
-              
-            var layerGrid2 = L.latlngGraticule({
-                showLabel: true,
-                dashArray: [8, 8],
-                color: '#FFFFFF',
-                fontColor: '#FFFFFF',
-                opacity: .8,
-                zoomInterval: [
-                    {start: 2, end: 3, interval: 30},
-                    {start: 4, end: 4, interval: 10},
-                    {start: 5, end: 6, interval: 5},
-                    {start: 7, end: 8, interval: 1},
-                    {start: 9, end: 10, interval: 0.25},
-                    {start: 11, end: 12, interval: 0.1},                 
-                    {start: 13, end: 13, interval: 0.025},
-                    {start: 14, end: 15, interval: 0.01},
-                    {start: 16, end: 22, interval: 0.005},
-                   
-                ]
-            });
-
-            
-
-            var map = L.map(option.target, { zoomControl: false, center: option.latLng, zoom: option.zoom, layers: [googleSatelitte, layerGrid2] }); 
+            var map = L.map(option.target, { zoomControl: false, center: option.latLng, zoom: option.zoom, fullscreenControl: true, layers: [googleStreets] }); 
                         
             var layers = {
                 "<span class='mapSwitcherWrapper googleSwitcherWrapper'><img class='layer-icon' src='resources/images/googleRoad.png' alt='' /> <p>Map</p></span>": googleStreets,
@@ -443,19 +487,14 @@ Protocol = {
                 "<span class='mapSwitcherWrapper openstreetSwitcherWrapper'><img class='layer-icon' src='resources/images/openStreet.png' alt='' /> <p>OpenStreet</p></span>": osm,                 
             };
            
-            var mapOverlays = {
-                /*'SeaMarks': layerSeaMark,*/
-                'Grid': layerGrid2,               	  	
-			};
-            L.control.layers(layers, mapOverlays).addTo(map);         
+            
+            L.control.layers(layers).addTo(map);         
 
             /*map.on('zoomend', function() {
                console.log(map.getZoom());
             });  */ 
 
             return map;
-
-
         },
         toDegreesMinutesAndSeconds: function (coordinate) {
             var absolute = Math.abs(coordinate);
@@ -475,19 +514,8 @@ Protocol = {
 
             return latitude + " " + latitudeCardinal + "\n" + longitude + " " + longitudeCardinal;
         },
-        convertDMSLat: function (lat) {
-            var latitude = Protocol.Helper.toDegreesMinutesAndSeconds(lat);
-            var latitudeCardinal = Math.sign(lat) >= 0 ? "N" : "S";
-
-            return latitude + " " + latitudeCardinal;
-        },
-        convertDMSLng: function (lng) {
-            var longitude = Protocol.Helper.toDegreesMinutesAndSeconds(lng);
-            var longitudeCardinal = Math.sign(lng) >= 0 ? "E" : "W";
-
-            return longitude + " " + longitudeCardinal;
-        },
         getAssetStateInfo: function(asset){
+            
             /*
                 state-0  -- gray
                 state-1  -- green
@@ -544,7 +572,7 @@ Protocol = {
                         if(typeof asset.posInfo.alt == "undefined"){
                             ret.temperature.value = LANGUAGE.COM_MSG11;
                         }else{
-                            ret.temperature.value = asset.posInfo.alt + '&nbsp;°C'; 
+                            ret.temperature.value = Math.round(asset.posInfo.alt*10)/10 + '&nbsp;°C'; 
                         }                   
                     }
                     if(asset.haveFeature("FuelSensor")){
@@ -557,11 +585,20 @@ Protocol = {
                     }
                     if(asset.haveFeature("Voltage")){
                         ret.voltage = {};
-                        if(typeof asset.posInfo.alt == "undefined"){
+                        //console.log(asset.posInfo.alt);
+                        /*if(typeof asset.posInfo.alt == "undefined"){
                             ret.voltage.value = LANGUAGE.COM_MSG11;
                         }else{                            
                             ret.voltage.value = (asset.posInfo.alt > 50? LANGUAGE.COM_MSG11 : ""+ Math.round(asset.posInfo.alt*10)/10 + '&nbsp;V');
-                        }                         
+                        }    */    
+
+                        ret.voltage.value = LANGUAGE.COM_MSG11;
+                        if(asset.posInfo.Voltage){
+                            ret.voltage.value =  Math.round(asset.posInfo.Voltage*10)/10 + '&nbsp;V';
+                        }
+                        else{
+                            ret.voltage.value = (asset.posInfo.alt > 50? LANGUAGE.COM_MSG11 : ""+ Math.round(asset.posInfo.alt*10)/10 + '&nbsp;V');
+                        }                 
                     } 
                     if(asset.haveFeature("Mileage")) {                    
                         ret.mileage = {};
@@ -574,7 +611,7 @@ Protocol = {
                         if (typeof (asset._FIELD_FLOAT8) == 'undefined') {
                             asset._FIELD_FLOAT8 = 0;
                         }
-                        ret.engineHours.value = TimeSpan(parseInt(asset.posInfo.launchHours)*1000 + parseInt(asset.InitAcconHours)*60*60*1000 + parseInt(asset._FIELD_FLOAT8)*1000).format("^hh:mm");  
+                        ret.engineHours.value = TimeSpan(parseInt(asset.posInfo.launchHours)*1000 + parseInt(asset.InitAcconHours)*60*60*1000 + parseInt(asset._FIELD_FLOAT8)*1000).format("^hh:mm:ss");  
                         //console.log(asset);
                     }
                     if(asset.haveFeature("Acc")){
@@ -606,6 +643,21 @@ Protocol = {
                     if(asset.haveFeature("Alt")){
                         ret.altitude = {};
                         ret.altitude.value = asset.posInfo.alt + '&nbsp;ft';                   
+                    }
+                    if(asset.haveFeature("Heartrate"))
+                    {
+                        ret.heartrate = {};
+                        ret.heartrate.value = parseInt(asset.posInfo.Heartrate); 
+
+                        /*ret.steps = {};
+                        ret.steps.value = parseInt(asset.posInfo.Steps);*/
+
+                        /*ret.push('<div class="item-attribute-border55">'
+                            +'<div  class="iconfont2 item-attribute-icon" style="color:red">&#xe65b;</div>'
+                            +'<div class="item-attribute-value">'
+                            +  parseInt(this.posInfo.Heartrate)
+                            +'</div>'
+                            +'</div>');  */   
                     }
                     /*if(asset.haveFeature("RFIDCard")){
                         ret.driver = {};
@@ -720,15 +772,23 @@ Protocol = {
                         value: false,
                         state: 'state-0',
                     };
-                    if (asset.StatusNew) {
+                    ret.lockdoor = {
+                        value: false,
+                        state: 'state-0',
+                    };
+                    if (asset.StatusNew) {                       
                         var geolockImmobSate = Protocol.Helper.getGeoImmobState(asset.StatusNew);
                         if (geolockImmobSate.Geolock) {
                             ret.geolock.value = geolockImmobSate.Geolock;
                             ret.geolock.state = 'state-1';
                         }
-                        if (geolockImmobSate.Geolock) {
+                        if (geolockImmobSate.Immobilise) {
                             ret.immob.value = geolockImmobSate.Immobilise;
-                            ret.immob.state = 'state-1';
+                            ret.immob.state = 'state-3'; 
+                        }
+                        if (geolockImmobSate.LockDoor) {
+                            ret.lockdoor.value = geolockImmobSate.LockDoor;
+                            ret.lockdoor.state = 'state-3'; 
                         }
                     }                   
                     
@@ -795,14 +855,16 @@ Protocol.Common = JClass({
         this._FIELD_FLOAT7 = arg._FIELD_FLOAT7;
         this.AlarmOptions = arg.AlarmOptions;
         this._FIELD_FLOAT8 = arg._FIELD_FLOAT8;
-        this.StatusNew = arg.StatusNew;  
+        this.StatusNew = arg.StatusNew;    
         this._FIELD_INT2 = arg._FIELD_INT2;
         this.GroupCode = arg.GroupCode;   
         this.SolutionType = arg.SolutionType;
         this.Registration = arg.Registration;
         this.StockNumber = arg.StockNumber;
         this.MaxSpeed = arg.MaxSpeed;
-        this.MaxSpeedAlertMode = arg.MaxSpeedAlertMode;     
+        this.MaxSpeedAlertMode = arg.MaxSpeedAlertMode;
+
+        
     
     },
     initDeviceInfoEx:function(){},
